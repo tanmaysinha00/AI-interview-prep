@@ -1,0 +1,30 @@
+# Maven
+target/
+.mvn/timing.properties
+
+# IDE
+.idea/
+*.iml
+.eclipse/
+.settings/
+.project
+.classpath
+
+# macOS
+.DS_Store
+
+# Secrets — NEVER commit these
+src/main/resources/application-dev.properties
+*.env
+.env
+
+# Logs
+*.log
+logs/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Spring Boot devtools restart
+.spring-boot-devtools.properties

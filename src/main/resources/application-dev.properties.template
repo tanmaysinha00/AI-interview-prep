@@ -1,0 +1,32 @@
+# ============================================================
+# Dev profile template — copy to application-dev.properties
+# and fill in your secrets. This file is safe to commit.
+# application-dev.properties is gitignored.
+# ============================================================
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/interviewprep_dev
+spring.datasource.username=dev
+spring.datasource.password=devpass
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.flyway.url=jdbc:postgresql://localhost:5432/interviewprep_dev
+spring.flyway.user=dev
+spring.flyway.password=devpass
+
+spring.data.redis.host=localhost
+spring.data.redis.port=6379
+
+logging.level.com.interviewprep=DEBUG
+logging.level.org.springframework.security=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
+
+app.cors.allowed-origins=http://localhost:5173
+
+# FILL IN YOUR SECRETS BELOW:
+app.jwt.secret=REPLACE_WITH_YOUR_JWT_SECRET_MIN_256_BITS
+app.claude.api-key=REPLACE_WITH_YOUR_CLAUDE_API_KEY
+
+sentry.enabled=false
+
+management.endpoints.web.exposure.include=*
+management.endpoint.health.show-details=always

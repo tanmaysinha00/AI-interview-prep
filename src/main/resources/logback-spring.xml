@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- Structured JSON logging for prod/staging -->
+    <springProfile name="prod,staging">
+        <appender name="JSON_STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <includeMdcKeyName>userId</includeMdcKeyName>
+                <includeMdcKeyName>interviewId</includeMdcKeyName>
+                <includeMdcKeyName>requestId</includeMdcKeyName>
+                <fieldNames>
+                    <timestamp>timestamp</timestamp>
+                    <message>message</message>
+                    <logger>logger</logger>
+                    <thread>thread</thread>
+                    <level>level</level>
+                </fieldNames>
+                <!-- Mask sensitive fields -->
+                <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+                    <valueMasker class="net.logstash.logback.mask.RegexValueMasker">
+                        <regex>"password"\s*:\s*"[^"]*"</regex>
+                        <replacement>"password":"***"</replacement>
+                    </valueMasker>
+                    <valueMasker class="net.logstash.logback.mask.RegexValueMasker">
+                        <regex>"token"\s*:\s*"[^"]*"</regex>
+                        <replacement>"token":"***"</replacement>
+                    </valueMasker>
+                </jsonGeneratorDecorator>
+            </encoder>
+        </appender>
+        <root level="INFO">
+            <appender-ref ref="JSON_STDOUT"/>
+        </root>
+    </springProfile>
+
+    <!-- Human-readable logging for dev/test -->
+    <springProfile name="dev,test,default">
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+        </appender>
+        <root level="DEBUG">
+            <appender-ref ref="STDOUT"/>
+        </root>
+        <logger name="com.interviewprep" level="DEBUG"/>
+        <logger name="org.springframework.web" level="INFO"/>
+        <logger name="org.hibernate" level="WARN"/>
+    </springProfile>
+</configuration>

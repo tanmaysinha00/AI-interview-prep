@@ -1,0 +1,10 @@
+[build]
+builder = "nixpacks"
+buildCommand = "./mvnw clean package -DskipTests -B"
+
+[deploy]
+startCommand = "java -Dserver.port=$PORT -Dspring.profiles.active=prod -jar target/app.jar"
+healthcheckPath = "/actuator/health"
+healthcheckTimeout = 60
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
