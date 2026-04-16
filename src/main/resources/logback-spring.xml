@@ -16,17 +16,6 @@
                     <thread>thread</thread>
                     <level>level</level>
                 </fieldNames>
-                <!-- Mask sensitive fields -->
-                <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
-                    <valueMasker class="net.logstash.logback.mask.RegexValueMasker">
-                        <regex>"password"\s*:\s*"[^"]*"</regex>
-                        <replacement>"password":"***"</replacement>
-                    </valueMasker>
-                    <valueMasker class="net.logstash.logback.mask.RegexValueMasker">
-                        <regex>"token"\s*:\s*"[^"]*"</regex>
-                        <replacement>"token":"***"</replacement>
-                    </valueMasker>
-                </jsonGeneratorDecorator>
             </encoder>
         </appender>
         <root level="INFO">
