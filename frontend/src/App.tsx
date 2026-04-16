@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import InterviewPage from './pages/InterviewPage'
 import SummaryPage from './pages/SummaryPage'
+import AdminDashboardPage from './pages/AdminDashboardPage'
 
 export default function App() {
   return (
@@ -25,6 +26,10 @@ export default function App() {
           <Route
             path="/interview/:id/summary"
             element={<PrivateRoute><SummaryPage /></PrivateRoute>}
+          />
+          <Route
+            path="/admin"
+            element={<PrivateRoute><AdminDashboardPage /></PrivateRoute>}
           />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

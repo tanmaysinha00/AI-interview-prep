@@ -14,6 +14,9 @@ import java.util.UUID;
 @Table(name = "users")
 public class User implements UserDetails {
 
+    public enum Role   { USER, ADMIN }
+    public enum Status { PENDING, ACTIVE, SUSPENDED }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -34,6 +37,17 @@ public class User implements UserDetails {
     @Column(name = "display_name")
     private String displayName;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private Role role = Role.USER;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private Status status = Status.PENDING;
+
+    @Column(name = "login_count", nullable = false)
+    private int loginCount = 0;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
@@ -46,21 +60,20 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
-    public String getPassword() {
-        return passwordHash;
-    }
+    public String getPassword() { return passwordHash; }
 
     @Override
-    public String getUsername() {
-        return email;
-    }
+    public String getUsername() { return email; }
+
+    @Override
+    public boolean isEnabled() { return status == Status.ACTIVE; }
 
     // ----------------------------------------------------------------
-    // Getters & setters (no Lombok — keeps dependencies minimal)
+    // Getters & setters
     // ----------------------------------------------------------------
 
     public UUID getId() { return id; }
@@ -80,6 +93,15 @@ public class User implements UserDetails {
 
     public String getDisplayName() { return displayName; }
     public void setDisplayName(String displayName) { this.displayName = displayName; }
+
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
+
+    public Status getStatus() { return status; }
+    public void setStatus(Status status) { this.status = status; }
+
+    public int getLoginCount() { return loginCount; }
+    public void setLoginCount(int loginCount) { this.loginCount = loginCount; }
 
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }

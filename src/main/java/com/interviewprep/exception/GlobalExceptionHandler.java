@@ -89,6 +89,22 @@ public class GlobalExceptionHandler {
         return pd;
     }
 
+    @ExceptionHandler(AccountPendingException.class)
+    public ProblemDetail handleAccountPending(AccountPendingException ex, HttpServletRequest req) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+        pd.setTitle("Account Pending Approval");
+        pd.setInstance(URI.create(req.getRequestURI()));
+        return pd;
+    }
+
+    @ExceptionHandler(AccountSuspendedException.class)
+    public ProblemDetail handleAccountSuspended(AccountSuspendedException ex, HttpServletRequest req) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
+        pd.setTitle("Account Suspended");
+        pd.setInstance(URI.create(req.getRequestURI()));
+        return pd;
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ProblemDetail handleAuthentication(AuthenticationException ex, HttpServletRequest req) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Authentication required");

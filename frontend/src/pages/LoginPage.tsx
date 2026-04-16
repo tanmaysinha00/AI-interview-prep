@@ -7,6 +7,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [isPending, setIsPending] = useState(false)
   const [loading, setLoading] = useState(false)
   const { setToken } = useAuth()
   const navigate = useNavigate()
@@ -14,14 +15,27 @@ export default function LoginPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
+    setIsPending(false)
     setLoading(true)
     try {
       const res = await login(email, password)
       setToken(res.data.accessToken)
-      navigate('/dashboard')
+      // role is set synchronously inside setToken
+      const decoded = (() => {
+        try { return JSON.parse(atob(res.data.accessToken.split('.')[1])) } catch { return {} }
+      })()
+      if (decoded.role === 'ADMIN') {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
-      setError(msg ?? 'Invalid credentials. Please try again.')
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ?? ''
+      if (detail.toLowerCase().includes('pending')) {
+        setIsPending(true)
+      } else {
+        setError(detail || 'Invalid credentials. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
@@ -32,6 +46,12 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <h1 className="text-white text-2xl font-semibold text-center mb-8">Sign in</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {isPending && (
+            <div className="bg-yellow-900/40 border border-yellow-600 text-yellow-300 text-sm px-4 py-3 rounded-lg">
+              <p className="font-medium">Account pending approval</p>
+              <p className="text-yellow-400 mt-1">Your account is awaiting admin approval. You'll be able to sign in once it's activated.</p>
+            </div>
+          )}
           {error && (
             <div className="bg-red-900/40 border border-red-700 text-red-300 text-sm px-4 py-2 rounded-lg">
               {error}

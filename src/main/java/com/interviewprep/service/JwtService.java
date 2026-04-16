@@ -1,5 +1,6 @@
 package com.interviewprep.service;
 
+import com.interviewprep.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -37,11 +38,13 @@ public class JwtService {
     }
 
     public String generateAccessToken(UserDetails userDetails) {
-        return buildToken(userDetails.getUsername(), accessTokenExpiryMs, "access");
+        String role = (userDetails instanceof User u) ? u.getRole().name() : "USER";
+        return buildToken(userDetails.getUsername(), accessTokenExpiryMs, "access", role);
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(userDetails.getUsername(), refreshTokenExpiryMs, "refresh");
+        String role = (userDetails instanceof User u) ? u.getRole().name() : "USER";
+        return buildToken(userDetails.getUsername(), refreshTokenExpiryMs, "refresh", role);
     }
 
     public String extractUsername(String token) {
@@ -75,12 +78,13 @@ public class JwtService {
     // Private helpers
     // ----------------------------------------------------------------
 
-    private String buildToken(String subject, long expiryMs, String type) {
+    private String buildToken(String subject, long expiryMs, String type, String role) {
         Date now = new Date();
         return Jwts.builder()
                 .id(UUID.randomUUID().toString())
                 .subject(subject)
                 .claim("type", type)
+                .claim("role", role)
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + expiryMs))
                 .signWith(signingKey)

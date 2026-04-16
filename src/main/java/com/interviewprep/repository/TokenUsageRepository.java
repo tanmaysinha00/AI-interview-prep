@@ -12,4 +12,15 @@ public interface TokenUsageRepository extends JpaRepository<TokenUsage, UUID> {
 
     @Query("SELECT COALESCE(SUM(t.inputTokens + t.outputTokens), 0) FROM TokenUsage t WHERE t.interviewId = :interviewId")
     long sumTotalTokensByInterviewId(@Param("interviewId") UUID interviewId);
+
+    @Query("""
+            SELECT COALESCE(SUM(t.inputTokens + t.outputTokens), 0)
+            FROM TokenUsage t
+            JOIN Interview i ON t.interviewId = i.id
+            WHERE i.userId = :userId
+            """)
+    long sumTotalTokensByUserId(@Param("userId") UUID userId);
+
+    @Query("SELECT COALESCE(SUM(t.inputTokens + t.outputTokens), 0) FROM TokenUsage t")
+    long sumAllTokens();
 }

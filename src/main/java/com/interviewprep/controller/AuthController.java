@@ -3,6 +3,7 @@ package com.interviewprep.controller;
 import com.interviewprep.dto.AuthResponse;
 import com.interviewprep.dto.LoginRequest;
 import com.interviewprep.dto.RegisterRequest;
+import com.interviewprep.entity.User;
 import com.interviewprep.service.JwtService;
 import com.interviewprep.service.UserService;
 import jakarta.servlet.http.Cookie;
@@ -53,11 +54,19 @@ public class AuthController {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
-        UserDetails user = userService.loadUserByUsername(request.email());
+        UserDetails userDetails = userService.loadUserByUsername(request.email());
+
+        if (userDetails instanceof User user && user.getStatus() == User.Status.PENDING) {
+            throw new com.interviewprep.exception.AccountPendingException();
+        }
+        if (userDetails instanceof User user && user.getStatus() == User.Status.SUSPENDED) {
+            throw new com.interviewprep.exception.AccountSuspendedException();
+        }
+
         userService.updateLastLogin(request.email());
 
-        String accessToken = jwtService.generateAccessToken(user);
-        setRefreshTokenCookie(response, jwtService.generateRefreshToken(user));
+        String accessToken = jwtService.generateAccessToken(userDetails);
+        setRefreshTokenCookie(response, jwtService.generateRefreshToken(userDetails));
 
         return AuthResponse.bearer(accessToken, jwtService.getAccessTokenExpirySeconds());
     }
