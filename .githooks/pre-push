@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Pre-push hook: runs backend unit tests and frontend type-check before any push.
+# Skip with: git push --no-verify (use sparingly)
+
+set -euo pipefail
+
+REMOTE="$1"
+URL="$2"
+BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || echo "detached")
+
+echo "🔍 Pre-push checks for branch '$BRANCH' → $REMOTE"
+
+# ── Backend: compile + unit tests ─────────────────────────────────────────
+echo ""
+echo "▶ Running backend unit tests (./mvnw test)…"
+if ! ./mvnw test -B -q 2>&1; then
+  echo ""
+  echo "✗ Backend tests failed. Fix them before pushing."
+  echo "  (run ./mvnw test for details)"
+  exit 1
+fi
+echo "✓ Backend tests passed"
+
+# ── Frontend: type-check (only if frontend/ changed) ──────────────────────
+if git diff --cached --name-only HEAD 2>/dev/null | grep -q "^frontend/" || \
+   git diff HEAD~1 --name-only 2>/dev/null | grep -q "^frontend/"; then
+  echo ""
+  echo "▶ Running frontend type-check (npm run type-check)…"
+  if ! (cd frontend && npm run type-check 2>&1); then
+    echo ""
+    echo "✗ Frontend type errors found. Fix them before pushing."
+    exit 1
+  fi
+  echo "✓ Frontend type-check passed"
+fi
+
+echo ""
+echo "✓ All checks passed — pushing to $REMOTE"
