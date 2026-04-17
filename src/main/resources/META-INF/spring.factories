@@ -1,1 +1,2 @@
 org.springframework.boot.env.EnvironmentPostProcessor=com.interviewprep.config.DatabaseUrlProcessor
+org.springframework.context.ApplicationListener=com.interviewprep.config.StartupValidator
