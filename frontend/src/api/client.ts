@@ -1,9 +1,8 @@
 import axios from 'axios'
 
 function resolveBaseUrl(): string {
-  const raw = import.meta.env.VITE_API_BASE_URL
+  const raw = (import.meta.env.VITE_API_BASE_URL ?? '').trim()
   if (!raw) return 'http://localhost:8080'
-  // Add https:// if the secret was saved without a protocol prefix
   if (!raw.startsWith('http://') && !raw.startsWith('https://')) return `https://${raw}`
   return raw
 }
