@@ -37,9 +37,9 @@ export interface PlatformMetrics {
   interviewsByDay: DayCount[]
 }
 
-export const getUsers = () => client.get<AdminUser[]>('/admin/users')
-export const approveUser = (id: string) => client.post<AdminUser>(`/admin/users/${id}/approve`)
-export const rejectUser = (id: string) => client.post<AdminUser>(`/admin/users/${id}/reject`)
-export const suspendUser = (id: string) => client.post<AdminUser>(`/admin/users/${id}/suspend`)
-export const reactivateUser = (id: string) => client.post<AdminUser>(`/admin/users/${id}/reactivate`)
-export const getMetrics = () => client.get<PlatformMetrics>('/admin/metrics')
+export const getUsers = () => client.get<AdminUser[]>('/api/v1/admin/users')
+export const approveUser = (id: string) => client.post<AdminUser>(`/api/v1/admin/users/${id}/approve`)
+export const rejectUser = (id: string) => client.post<AdminUser>(`/api/v1/admin/users/${id}/reject`)
+export const suspendUser = (id: string) => client.post<AdminUser>(`/api/v1/admin/users/${id}/suspend`)
+export const reactivateUser = (id: string) => client.post<AdminUser>(`/api/v1/admin/users/${id}/reactivate`)
+export const getMetrics = () => client.get<PlatformMetrics>('/api/v1/admin/metrics')

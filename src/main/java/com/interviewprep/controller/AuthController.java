@@ -51,9 +51,8 @@ public class AuthController {
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest request,
                               HttpServletResponse response) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
-
+        // Check status BEFORE authenticationManager so Spring Security's
+        // isEnabled() check doesn't swallow our descriptive exception with a generic 401
         UserDetails userDetails = userService.loadUserByUsername(request.email());
 
         if (userDetails instanceof User user && user.getStatus() == User.Status.PENDING) {
@@ -62,6 +61,9 @@ public class AuthController {
         if (userDetails instanceof User user && user.getStatus() == User.Status.SUSPENDED) {
             throw new com.interviewprep.exception.AccountSuspendedException();
         }
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
         userService.updateLastLogin(request.email());
 
