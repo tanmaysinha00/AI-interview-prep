@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { register } from '../api/auth'
-import { useAuth } from '../context/AuthContext'
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
@@ -9,23 +8,40 @@ export default function RegisterPage() {
   const [displayName, setDisplayName] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { setToken } = useAuth()
-  const navigate = useNavigate()
+  const [registered, setRegistered] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
     try {
-      const res = await register(email, password, displayName)
-      setToken(res.data.accessToken)
-      navigate('/dashboard')
+      await register(email, password, displayName)
+      setRegistered(true)
     } catch (err: unknown) {
       const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
       setError(detail ?? 'Registration failed. Please try again.')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (registered) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
+        <div className="w-full max-w-sm text-center space-y-4">
+          <div className="text-4xl">✓</div>
+          <h1 className="text-white text-xl font-semibold">Account created</h1>
+          <div className="bg-yellow-900/40 border border-yellow-700 text-yellow-300 text-sm px-4 py-4 rounded-lg text-left">
+            <p className="font-medium mb-1">Pending admin approval</p>
+            <p className="text-yellow-400">Your account has been submitted. You'll be able to sign in once an administrator approves it.</p>
+          </div>
+          <p className="text-gray-500 text-sm">
+            Already approved?{' '}
+            <Link to="/login" className="text-indigo-400 hover:text-indigo-300">Sign in</Link>
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
