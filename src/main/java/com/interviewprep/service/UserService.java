@@ -88,7 +88,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new IllegalArgumentException("Email already registered: " + request.email());
+            throw new com.interviewprep.exception.EmailAlreadyRegisteredException(request.email());
         }
 
         User user = new User();

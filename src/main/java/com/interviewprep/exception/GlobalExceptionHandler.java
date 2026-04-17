@@ -89,6 +89,14 @@ public class GlobalExceptionHandler {
         return pd;
     }
 
+    @ExceptionHandler(EmailAlreadyRegisteredException.class)
+    public ProblemDetail handleEmailAlreadyRegistered(EmailAlreadyRegisteredException ex, HttpServletRequest req) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+        pd.setTitle("Email Already Registered");
+        pd.setInstance(URI.create(req.getRequestURI()));
+        return pd;
+    }
+
     @ExceptionHandler(AccountPendingException.class)
     public ProblemDetail handleAccountPending(AccountPendingException ex, HttpServletRequest req) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage());
