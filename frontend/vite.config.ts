@@ -7,6 +7,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  // GitHub Pages project pages are served from /<repo-name>/
+  // Without this, built asset paths start with / and 404 on GH Pages
+  base: '/AI-interview-prep/',
   server: {
     port: 5173,
     proxy: {
@@ -16,5 +19,4 @@ export default defineConfig({
       },
     },
   },
-  // GitHub Pages uses hash routing so no base path needed for SPA
 })
