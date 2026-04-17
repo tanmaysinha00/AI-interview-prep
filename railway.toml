@@ -3,7 +3,7 @@ builder = "nixpacks"
 buildCommand = "./mvnw clean package -DskipTests -B"
 
 [deploy]
-startCommand = "java -Dserver.port=$PORT -Dspring.profiles.active=prod -jar target/app.jar"
+startCommand = "java -Dserver.port=$PORT -Dspring.profiles.active=prod -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:MaxMetaspaceSize=200m -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError -jar target/app.jar"
 healthcheckPath = "/actuator/health"
 healthcheckTimeout = 60
 restartPolicyType = "on_failure"
