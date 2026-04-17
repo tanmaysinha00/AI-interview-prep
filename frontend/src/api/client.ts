@@ -1,6 +1,13 @@
 import axios from 'axios'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'
+function resolveBaseUrl(): string {
+  const raw = import.meta.env.VITE_API_BASE_URL
+  if (!raw) return 'http://localhost:8080'
+  // Add https:// if the secret was saved without a protocol prefix
+  if (!raw.startsWith('http://') && !raw.startsWith('https://')) return `https://${raw}`
+  return raw
+}
+const BASE_URL = resolveBaseUrl()
 
 const api = axios.create({
   baseURL: BASE_URL,
